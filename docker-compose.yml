@@ -1,0 +1,24 @@
+
+version: '3'  # Docker Compose 파일 버전, 3 이상 권장
+
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: Jenkins.Dockerfile
+    image: my-jenkins-with-docker:latest
+    user: root
+    ports:
+      - "8080:8080"   # 호스트 8080 포트를 컨테이너 8080 포트와 매핑 (웹 UI)
+      - "50000:50000" # 에이전트 연결용 포트 매핑
+    volumes:
+      - jenkins_home:/var/jenkins_home  # Jenkins 데이터 저장용 볼륨
+      - /var/run/docker.sock:/var/run/docker.sock  # Docker 내부 컨테이너 접근용
+    restart: always  # 컨테이너 종료 시 자동 재시작
+
+  myapp:
+    build: .  # 현재 디렉토리의 Dockerfile로 이미지 빌드
+    image: myapp:latest        # 빌드된 이미지 이름을 명시적으로 지정 
+
+volumes:
+  jenkins_home:  # Jenkins 데이터를 지속적으로 저장할 볼륨
